@@ -51,6 +51,7 @@ bool Aquarium::loadFish(string file_name){
             }
         }
         Fish fish = {fish_name, gallons_required};
+        _gallons_used += gallons_required;
         _fish.push_back(fish);
         name_acquired = false;
     }
@@ -73,13 +74,12 @@ int main(){
     //create an aquarium object
     Aquarium marias_fish("maria");
 
-    //load fish
-    cout << marias_fish.loadFish("fish_list.txt") << endl;
-
-    //remove valid fish
-    cout << marias_fish.removeFish("Black Koi") << endl;
-
-    //remove invalid fish
-    cout << marias_fish.removeFish("Silly Goober Fish") << endl;
-
+    //set aquarist name
+    marias_fish.setAquaristName("Mark");
+    //get aquarist name
+    cout << marias_fish.getAquaristName() << endl;
+    //set gallons used
+    marias_fish.setGallonsUsed(100);
+    //get gallons used
+    cout << marias_fish.getGallonsUsed() << endl;
 }
