@@ -35,10 +35,10 @@ bool Aquarium::loadFish(string file_name){
         return false;
     }
     string line;
-    string fish_name;
-    int gallons_required = 0;
     bool name_acquired = false;
     while(getline(file, line)){
+        string fish_name;
+        int gallons_required = 0;
         for(int i = 0; i < line.length(); i++){
             if(!name_acquired){
                 if(line[i] == ','){
@@ -50,6 +50,9 @@ bool Aquarium::loadFish(string file_name){
                 gallons_required = line[i];
             }
         }
+        Fish fish = {fish_name, gallons_required};
+        _fish.push_back(fish);
+        name_acquired = false;
     }
 
     return true;
@@ -57,7 +60,6 @@ bool Aquarium::loadFish(string file_name){
 
 bool Aquarium::removeFish(string fish_name){
     for(int i = 0; i < _fish.size(); i++){
-        cout << _fish.at(i).name << ", " << fish_name;
         if(_fish.at(i).name == fish_name){
             _fish.erase(_fish.begin()+i);
             return true;
@@ -72,12 +74,12 @@ int main(){
     Aquarium marias_fish("maria");
 
     //load fish
-    marias_fish.loadFish("fish_15.txt");
+    cout << marias_fish.loadFish("fish_list.txt") << endl;
 
-    //remove fish that has not been selected
-    cout << marias_fish.removeFish("Butterfly Koi") << endl;
+    //remove valid fish
+    cout << marias_fish.removeFish("Black Koi") << endl;
 
-    // remove fish that has been selected
-    cout << marias_fish.removeFish("Rose Petal Betta") << endl;
+    //remove invalid fish
+    cout << marias_fish.removeFish("Silly Goober Fish") << endl;
 
 }
