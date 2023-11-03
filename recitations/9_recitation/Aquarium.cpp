@@ -73,7 +73,6 @@ bool Aquarium::removeFish(string fish_name){
 int main(){
     //create an aquarium object
     Aquarium marias_fish("maria");
-
     //set aquarist name
     marias_fish.setAquaristName("Mark");
     //get aquarist name
