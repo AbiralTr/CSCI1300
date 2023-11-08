@@ -1,17 +1,17 @@
 #pragma once
-#include <math.h>
 
-using namespace std;
+#include <string>
+
 
 class Planet{
     private:
-        string _planet_name;
+        std::string _planet_name;
         double _planet_radius = 0.0;
     public:
         Planet(){};
-        Planet(string name, double radius);
-        string getName();
-        void setName(string name);
+        Planet(std::string name, double radius);
+        std::string getName();
+        void setName(std::string name);
         double getRadius();
         void setRadius(double radius);
         double getVolume();
