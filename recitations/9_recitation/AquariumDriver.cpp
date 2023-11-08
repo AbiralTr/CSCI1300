@@ -21,3 +21,7 @@ int main(){
     return 0;
 }
 
+// recitation 10: 1a: The issue is that the command line does not include .\AquariumDriver.cpp
+// recitation 10: 1b: The command line is: g++ -Werror -Wall -Wpedantic -std=c++17 .\Aquarium.cpp .\AquariumDriver.cpp
+
+
