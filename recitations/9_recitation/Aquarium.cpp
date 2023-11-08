@@ -80,6 +80,10 @@ bool Aquarium::loadFish(string filename)
     return false;
 }
 
+vector<Fish> Aquarium::getAvailableFish(){
+    return _available_fish;
+}
+
 bool Aquarium::removeFish(string fish_name){
     for(int i = 0; i < _selected_fish.size(); i++){
         if(_selected_fish.at(i).name == fish_name){

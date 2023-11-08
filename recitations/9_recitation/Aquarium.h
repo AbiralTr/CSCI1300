@@ -32,7 +32,8 @@ class Aquarium{
         void setGallonsUsed(int i);
         int getGallonsUsed();
         vector<Fish> getSelectedFish();
-;        bool loadFish(string file_name);
+        vector<Fish> getAvailableFish();
+        bool loadFish(string file_name);
         bool removeFish(string fish_name);
         int getTankSizeGallons();
         void setTankSizeGallons(int i);
