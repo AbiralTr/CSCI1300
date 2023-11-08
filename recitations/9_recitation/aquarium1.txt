@@ -1,0 +1,18 @@
+Minnow,1
+Fancy Guppy,1
+Blue Neon Guppy,1
+Elephant Ear Guppy,2
+Yellow Guppy,1
+
+Lyretail Guppy,1
+Red Panda Guppy,2
+Elephant Ear Betta,3
+Rose Petal Betta,3
+
+Halfmoon Betta,4
+Paradise Betta,3
+Blue Crowntail Betta,4
+
+Neon Tetra,2
+Electric Green Longfin Tetra,2
+Sunburst Orange Tetra,2

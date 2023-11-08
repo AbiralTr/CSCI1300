@@ -1,0 +1,13 @@
+Doitsu Koi,4
+Red Oranda Goldfish,4
+Black Koi,5
+Black Moor Goldfish,5
+Shubunkin Goldfish,4
+
+Electric Blue Jack Dempsey,3
+Red Oscar Cichlid,3
+Duboisi Cichlid,3
+Flowerhorn Cichlid,3
+Jack Dempsey Cichlid,3
+
+Blue Peacock Cichlid,3

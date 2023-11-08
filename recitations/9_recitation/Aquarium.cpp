@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <string>
+#include <sstream>
 #include "Aquarium.h"
 
 using namespace std;
@@ -7,10 +9,20 @@ using namespace std;
 Aquarium::Aquarium(){
     _aquarist_name = "";
     _gallons_used = 0;
+    _tank_size_gallons = 12;
 }
 
 Aquarium::Aquarium(string name){
     _aquarist_name = name;
+    _gallons_used = 0;
+    _tank_size_gallons = 12;
+}
+
+Aquarium::Aquarium(string name, int tanksize){
+    _aquarist_name = name;
+    _gallons_used = 0;
+    _tank_size_gallons = tanksize;
+
 }
 
 void Aquarium::setAquaristName(string s){
@@ -29,40 +41,49 @@ int Aquarium::getGallonsUsed(){
     return _gallons_used;
 }
 
-bool Aquarium::loadFish(string file_name){
-    ifstream file(file_name);
-    if(!file.is_open()){
-        return false;
-    }
-    string line;
-    bool name_acquired = false;
-    while(getline(file, line)){
-        string fish_name;
-        int gallons_required = 0;
-        for(int i = 0; i < line.length(); i++){
-            if(!name_acquired){
-                if(line[i] == ','){
-                    name_acquired = true;
-                } else{
-                    fish_name += line[i];
-                }
-            } else{
-                gallons_required = line[i];
-            }
-        }
-        Fish fish = {fish_name, gallons_required};
-        _gallons_used += gallons_required;
-        _fish.push_back(fish);
-        name_acquired = false;
-    }
+vector<Fish> Aquarium::getSelectedFish()
+{
+    return _selected_fish;
+}
 
-    return true;
+void Aquarium::displayFish(){
+    int len = _selected_fish.size();
+    for (int i = 0; i < len; i++)
+    {
+        // Fill the below line to cout the name and the gallons_required of the current fish.
+        cout << _selected_fish.at(i).name << " " << _selected_fish.at(i).gallons_required << endl;
+    }
+}
+
+bool Aquarium::loadFish(string filename)
+{
+    ifstream reader(filename);
+    string line = "";
+    if (reader.is_open())
+    {
+        while (getline(reader, line))
+        {
+            string fish_name, gal_req;
+            stringstream ss(line);
+            Fish current_fish;
+            int gals = 0;
+            getline(ss, fish_name, ',');
+            while(getline(ss, gal_req)){
+                gals = stoi(gal_req);
+            }
+            current_fish.name = fish_name;
+            current_fish.gallons_required = gals;
+            _available_fish.push_back(current_fish);
+        }
+        return true;
+    }
+    return false;
 }
 
 bool Aquarium::removeFish(string fish_name){
-    for(int i = 0; i < _fish.size(); i++){
-        if(_fish.at(i).name == fish_name){
-            _fish.erase(_fish.begin()+i);
+    for(int i = 0; i < _selected_fish.size(); i++){
+        if(_selected_fish.at(i).name == fish_name){
+            _selected_fish.erase(_selected_fish.begin()+i);
             return true;
         }
     }
@@ -70,15 +91,30 @@ bool Aquarium::removeFish(string fish_name){
     return false;
 }
 
-int main(){
-    //create an aquarium object
-    Aquarium marias_fish("maria");
-    //set aquarist name
-    marias_fish.setAquaristName("Mark");
-    //get aquarist name
-    cout << marias_fish.getAquaristName() << endl;
-    //set gallons used
-    marias_fish.setGallonsUsed(100);
-    //get gallons used
-    cout << marias_fish.getGallonsUsed() << endl;
+int Aquarium::getTankSizeGallons(){
+    return _tank_size_gallons;
+}
+
+void Aquarium::setTankSizeGallons(int i){
+    _tank_size_gallons = i;
+}
+
+int Aquarium::addFish(string fish_name){
+    int size = _available_fish.size();
+    bool isAvailable = true;
+    int index = 0;
+    for(int i = 0; i < size; i++){
+        if(_available_fish.at(i).name == fish_name){
+            isAvailable = false;
+            index = i;
+        }
+    }
+
+    if(isAvailable && _available_fish.at(index).gallons_required < (_tank_size_gallons - _gallons_used)){
+        return 1;
+    } else if(isAvailable){
+        return 0;
+    } else{
+        return -1;
+    }
 }
