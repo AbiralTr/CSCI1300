@@ -116,23 +116,38 @@ void playRockPaperScissors(Player players[2]){
             cout << "Player 1: Select candy to bet" << endl;
             getline(cin, bet);
             player1bet = players[0].findCandy(bet);
+            if(player1bet.name == ""){
+                cout << "Invalid selection!" << endl;
+            } else{
+                findingCandy = false;
+            }
+        }
+
+        bet = "";
+        cout << "Player 2 Inventory" << endl;
+        players[1].printInventory();
+        findingCandy = true;
+        while(findingCandy){
+            cout << "Player 2: Select candy to bet" << endl;
+            getline(cin, bet);
+            player2bet = players[1].findCandy(bet);
+            if(player2bet.name == ""){
+                cout << "Invalid selection!" << endl;
+            } else{
+                findingCandy = false;
+            }
         }
         
     }
 }
 
 int main(){
-    Candy test = Candy{"test"};
-    Candy test2 = Candy{"test2"};
-    Candy c[4] = {test, test, test2, test2};
-    Player p = Player(17, 0.15648, "effect", c, 3);
-    cout << "Inventory:" << endl;
-    p.printInventory();
-    Candy result;
-    result = p.findCandy("test");
-    cout << "Result of findCandy(\"test\"): " << result.name << " | " << result.description << endl;
-    result = p.findCandy("test2");
-    cout << "Result of findCandy(\"test2\"): " << result.name << " | " << result.description << endl;
-    result = p.findCandy("");
-    cout << "Result of findCandy(\"\"): " << result.name << " | " << result.description << endl;
+    Candy brown{"brown candy"};
+    Candy striped{"striped candy"};
+    Candy player1array[3] = {brown, striped, striped};
+    Candy player2array[3] = {brown, striped, striped};
+    Player player1 = Player(10, 100, "ballsy", player1array, 3);
+    Player player2 = Player(15, 200, "oh lawd", player2array, 3);
+    Player players[2] = {player1,player2};
+    playRockPaperScissors(players);
 }
