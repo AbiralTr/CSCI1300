@@ -1,0 +1,3 @@
+Frosty Fizz|Boosts player's stamina by 10 units|stamina|10|magical|10
+Toxic Taffy|Decreases opponents stamina by 20 units(strong)|stamina|-20|poison|25
+Caramel Comet|Protects against all poison candies|other|3|immunity|25

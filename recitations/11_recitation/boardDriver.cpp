@@ -8,6 +8,8 @@ using namespace std;
 
 int main(){
     Board board;
+
+    /*
     int input = 0;
 
     int rand_pos1 = (rand()/(double) RAND_MAX) * 82;
@@ -61,8 +63,8 @@ int main(){
 
         input = 0;
     }
-
-    /*
+    */
+   
     int player_count = 0;
     string players[] = {};
     cout << "Welcome to the game of candyland. Please enter the number of participants:" << endl;
@@ -73,7 +75,7 @@ int main(){
         cout << "Awesome! Here is a list of characters a player can select from:" << endl;
         
     }
-    */
+
 
     return 0;
 }
