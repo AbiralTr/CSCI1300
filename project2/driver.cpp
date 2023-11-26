@@ -89,12 +89,16 @@ vector<Player> loadCharacters(string file_name, vector<Player> playerVector){
     return playerVector;
 }
 
-int main(){
+int main(int argc, char *argv[]){
     vector<Candy> loaded_candies;
     vector<Player> loaded_characters;
 
     loaded_candies = loadCandies("candies.txt", loaded_candies);
     loaded_characters = loadCharacters("characters.txt", loaded_characters);
+
+    cout.flush();
+
+    std::cout << "hi" << std::endl;
 
     /*
     string players[] = {}; 

@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "candy.h"
 #include "board.h"
 
 class Player{
@@ -28,5 +29,4 @@ class Player{
         bool addCandy(Candy candy);
         bool removeCandy(std::string candy_name);  
         void setOwner(string name);
-
 };
