@@ -10,7 +10,7 @@ struct Candy{
     string description;
     double price = 0;
     string candy_type;
-    int value;
+    int value = 0;
 };
 
 class CandyStore{
@@ -20,7 +20,7 @@ class CandyStore{
         vector<Candy> _candy_list;
     public:
         CandyStore();
-        CandyStore(string name, vector<Candy> list, int position);
+        CandyStore(string name, vector<Candy> list, const int CANDY_LIST_SIZE, int position);
 
         string getName();
         int getPosition();

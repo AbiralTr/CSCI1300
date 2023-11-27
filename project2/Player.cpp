@@ -175,7 +175,6 @@ void playRockPaperScissors(Player players[2]){
         bool findingCandy = true;
         while(findingCandy){
             std::cout << "Player 1: Select candy to bet" << endl;
-            cin.ignore();
             getline(cin, player1betname);
             player1bet = players[0].findCandy(lower(player1betname));
             if(player1bet.name == ""){
@@ -340,6 +339,14 @@ void displayCandyVector(vector<Candy> candies){
     for(int i = 0; i < candies.size(); i++){
         cout << "Name: " << candies.at(i).name << ". Description: " << candies.at(i).description << ". Price: " << fixed << setprecision(2) << candies.at(i).price << ". " << "Type: " << candies.at(i).candy_type << endl;
     }
+}
+
+void Player::setPosition(int pos){
+    _position = pos;
+}
+
+int Player::getPosition(){
+    return _position;
 }
 
 

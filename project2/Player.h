@@ -13,6 +13,7 @@ class Player{
         std::string _effect = "";
         Candy _inventory[_MAX_CANDY_AMOUNT];
         int	_candy_amount = 0;
+        int _position = 0;
     public:
         Player();
         Player(string name, int stamina, double gold, std::string effect, Candy candy_array[], const int CANDY_ARRAY_SIZE);
@@ -32,4 +33,6 @@ class Player{
         string getOwner();
         void setName(string name);
         void setInventory(Candy array[], const int CANDY_ARRAY_SIZE);
+        int getPosition();
+        void setPosition(int pos);
 };

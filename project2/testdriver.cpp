@@ -42,5 +42,43 @@ int main(){
     testplayer.addCandy(chocolate);
     cout << "Candy Amount: " << testplayer.getCandyAmount() << endl;
     testplayer.printInventory();
+    Player testplayer2 = Player("Rigby", 15, 227, "Mega Looted", array, 2); // Create another Player
+    Player players[] = {testplayer, testplayer2};
+    cout << "\nPlaying Rock Paper Scissors with Peter and Rigby:" << endl;
+    playRockPaperScissors(players);
 
+    // Testing the Board
+    cout << "\nTesting the Board:" << endl;
+    Board board = Board();
+    vector<Player> playerVector = {testplayer, testplayer2};
+    board.setPlayers(playerVector);
+    board.addCandyStore(chocolateStore.getPosition(), chocolateStore);
+    CandyStore sweetStore = CandyStore();
+    cout << "Choose a starting player position: ";
+    int starting_position = 0;
+    cin >> starting_position;
+    board.setPlayerPosition(starting_position, 0);
+    board.displayBoard();
+    int player_move_input = 1;
+    while(player_move_input != 0){
+        cout << "Choose how you want to move(0 to exit): ";
+        cin >> player_move_input;
+        if(player_move_input == 0){
+            continue;
+        }
+        board.movePlayer(player_move_input, 0);
+        board.displayBoard();
+        if(board.isPositionCandyStore(board.getPlayerPosition(0))){
+            if(board.getPlayerPosition(0) == board.getCandyStore(0).getPosition()){
+                cout << "You have arrived @ " << board.getCandyStore(0).getName() << endl;
+                board.getCandyStore(0).displayStock();
+            } else if(board.getPlayerPosition(0) == board.getCandyStore(1).getPosition()){
+                cout << "You have arrived @ " << board.getCandyStore(1).getName() << endl;
+                board.getCandyStore(1).displayStock();
+            } else if(board.getPlayerPosition(0) == board.getCandyStore(2).getPosition()){
+                cout << "You have arrived @ " << board.getCandyStore(2).getName() << endl;
+                board.getCandyStore(2).displayStock();
+            }
+        }
+    }
 }

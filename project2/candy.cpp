@@ -7,10 +7,11 @@ CandyStore::CandyStore(){
 
 }
 
-CandyStore::CandyStore(string name, vector<Candy> list, const int CANDY_LIST_SIZE){
+CandyStore::CandyStore(string name, vector<Candy> list, const int CANDY_LIST_SIZE, int position){
     _store_name = name;
     _candy_list.resize(CANDY_LIST_SIZE);
     _candy_list = list;
+    _position = position;
 }
 
 string CandyStore::getName(){
