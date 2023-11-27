@@ -93,14 +93,13 @@ int main(int argc, char *argv[]){
     vector<Candy> loaded_candies;
     vector<Player> loaded_characters;
 
-    loaded_candies = loadCandies("candies.txt", loaded_candies);
-    loaded_characters = loadCharacters("characters.txt", loaded_characters);
+    loaded_candies = loadCandies("files/candies.txt", loaded_candies);
+    loaded_characters = loadCharacters("files/characters.txt", loaded_characters);
 
     cout.flush();
 
     std::cout << "hi" << std::endl;
 
-    /*
     string players[] = {}; 
     int player_count = 0;
 
@@ -114,7 +113,6 @@ int main(int argc, char *argv[]){
             cout << loaded_characters.at(i).getName() << endl;
         }
     }
-    */
 
 
     return 0;

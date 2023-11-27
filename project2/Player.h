@@ -29,4 +29,7 @@ class Player{
         bool addCandy(Candy candy);
         bool removeCandy(std::string candy_name);  
         void setOwner(string name);
+        string getOwner();
+        void setName(string name);
+        void setInventory(Candy array[], const int CANDY_ARRAY_SIZE);
 };

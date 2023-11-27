@@ -19,7 +19,7 @@ string CandyStore::getName(){
 
 vector<Candy> CandyStore::getCandyList()
 {
-    return vector<Candy>();
+    return _candy_list;
 }
 
 void CandyStore::setName(string s){
@@ -28,6 +28,14 @@ void CandyStore::setName(string s){
 
 void CandyStore::setList(vector<Candy> list){
     _candy_list = list;
+}
+
+int CandyStore::getPosition(){
+    return _position;
+}
+
+void CandyStore::setPosition(int i){
+    _position = i;
 }
 
 void CandyStore::displayStock(){

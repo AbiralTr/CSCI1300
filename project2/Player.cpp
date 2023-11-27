@@ -8,7 +8,7 @@
 using namespace std;
 
 Player::Player(){
-
+    _inventory[_MAX_CANDY_AMOUNT];
 }
 
 Player::Player(string name, int stamina, double gold, std::string effect, Candy candy_array[], const int CANDY_ARRAY_SIZE){
@@ -70,9 +70,7 @@ bool Player::addCandy(Candy candy){
             return true;
         }
     }
-
     return false;
-
 }
 
 bool Player::removeCandy(std::string candy_name){
@@ -101,8 +99,28 @@ bool Player::removeCandy(std::string candy_name){
     return false;
 }
 
+void Player::setInventory(Candy array[], const int CANDY_ARRAY_SIZE){
+    if(CANDY_ARRAY_SIZE > _MAX_CANDY_AMOUNT){
+        _candy_amount = _MAX_CANDY_AMOUNT;
+        for(int i = 0; i < _MAX_CANDY_AMOUNT; i++){
+            _inventory[i] = array[i];
+        }
+    } else{
+        for(int i = 0; i < CANDY_ARRAY_SIZE; i++){
+            if(array[i].name != "Empty"){
+                _candy_amount++;
+            }
+            _inventory[i] = array[i];
+        }
+    }
+}
+
 void Player::setOwner(string name){
     _owner = name;
+}
+
+string Player::getOwner(){
+    return _owner;
 }
 
 string Player::getName(){
@@ -116,6 +134,10 @@ int Player::getCandyAmount(){
 void Player::setStamina(int i)
 {
     _stamina = i;
+}
+
+void Player::setName(string name){
+    _name = name;
 }
 
 int Player::getStamina(){
@@ -319,4 +341,6 @@ void displayCandyVector(vector<Candy> candies){
         cout << "Name: " << candies.at(i).name << ". Description: " << candies.at(i).description << ". Price: " << fixed << setprecision(2) << candies.at(i).price << ". " << "Type: " << candies.at(i).candy_type << endl;
     }
 }
+
+
 
