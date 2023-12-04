@@ -1,5 +1,6 @@
 #include "board.cpp"
-#include "Player.cpp"
+#include "candy.cpp"
+#include "player.cpp"
 #include <iostream>
 #include <cstdlib>
 
@@ -95,8 +96,6 @@ int main(int argc, char *argv[]){
 
     loaded_candies = loadCandies("files/candies.txt", loaded_candies);
     loaded_characters = loadCharacters("files/characters.txt", loaded_characters);
-
-    cout.flush();
 
     std::cout << "hi" << std::endl;
 
