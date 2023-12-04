@@ -1,6 +1,12 @@
 #include "board.h"
 #include "candy.h"
 #include "player.h"
+#include <cstdlib>
+
+int randomNumber(int lowerBound, int upperBound){
+    srand(time(NULL));
+    return (rand() % upperBound) + lowerBound;
+}
 
 Board::Board()
 {

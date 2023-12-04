@@ -1,2 +1,2 @@
 JellyBean_Jane|100|50|Breezy Butterscotch,Lucky Licorice,Fearsome Fudge,Crimson Crystal
-RockyRoad_Riley|120|15|Staunchy Skittles,Breezy Buttermilk, Luminous Licks,Ballsy Bombs
+RockyRoad_Riley|120|15|Staunchy Skittles,Breezy Buttermilk,Luminous Licks,Ballsy Bombs
