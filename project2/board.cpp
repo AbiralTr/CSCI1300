@@ -2,9 +2,10 @@
 #include "candy.h"
 #include "player.h"
 #include <cstdlib>
+#include <random>
 
 int randomNumber(int lowerBound, int upperBound){
-    srand(time(NULL));
+    srand(time(0));
     return (rand() % upperBound) + lowerBound;
 }
 
@@ -204,12 +205,22 @@ bool Board::movePlayer(int tile_to_move_forward, int index)
 }
 
 int Board::drawCard(string player){
-    string colors[3] = {"Magenta", "Green", "Blue"};
+    string cards[6] = {"Matrix Magenta", "Emerald Green", "Beaten Blue", "Metaphysical Magenta", "Groundbreaking Green", "Black n Blue"};
     int tiles_moved = 0;
-    /*
-    Create rand object between 0 and 2 (inclusive)
-    Return the rand: 0 = Magenta, 1 = Green, 2 = Blue
-    The player connected to the function will then move to the nearest tile that corresponds with the color they drew
-    */
+    int pull = randomNumber(1, 9);
+    if(pull == 1 || pull == 2){
+        cout << "You pulled a Matrix Magenta card! You advance to the next purple tile." << endl;
+    } else if(pull == 3 || pull == 4){ 
+        cout << "You pulled a Emerald Green! You advance to the next green tile." << endl;
+    } else if(pull = 5 || pull == 6){
+        cout << "You pulled a Beaten Blue card! You advance to the next blue tile." << endl;
+    } else if(pull == 7){
+        cout << "You pulled a Metaphysical Magenta card! You advance to the next purple tile." << endl;
+    } else if(pull == 8){
+        cout << "You pulled a Groundbreaking Green card! You advance to the next purple tile." << endl;
+    } else if(pull == 9){
+        cout << "You pulled a Black n Blue card! You advance to the next purple tile." << endl;
+    }
+
     return tiles_moved;
 }

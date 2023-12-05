@@ -177,7 +177,6 @@ int main(int argc, char *argv[]){
         }
         
     }
-
     bool gameRunning = true;
     int turn = 0;
     int round = 1;
@@ -185,15 +184,20 @@ int main(int argc, char *argv[]){
     board.setPlayers(selected_characters);
     while(gameRunning){
         int turn_input = 0;
-        cout << "Turn " << turn+1 << endl;
+        board.displayBoard();
+        cout << "Round " << round << endl;
+        cout << "Turn " << turn+1 << " (" << players[turn] << ")" << endl;
         cout << "It's " << players[turn] << " turn\nPlease select a menu option:" << endl;
         cout << "1 ) Draw Card\n2 ) Eat Candy\n3 ) View Stats" << endl;
         cin >> turn_input;
         switch(turn_input){
             case 1:
+                board.drawCard(players[turn]);
                 turn++;
                 break;
             case 2:
+                cout << "Here is your Inventory of candies: " << endl;
+                board.getPlayer(turn).printInventory();
                 turn++;
                 break;
             case 3:
