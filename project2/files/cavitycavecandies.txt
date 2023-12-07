@@ -1,0 +1,3 @@
+Burning Booster Chocolate|Boosts player's stamina by 20 units|stamina|20|magical|20
+"Edible" Gum|Decreases opponents stamina by 50 units(strong)|stamina|-50|poison|45
+Chilly Pop|Protects against all poison candies|other|4|immunity|20

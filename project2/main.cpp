@@ -2,6 +2,7 @@
 #include "candy.cpp"
 #include "player.cpp"
 #include <iostream>
+#include <time.h>
 #include <cstdlib>
 
 using namespace std;
@@ -142,6 +143,7 @@ int main(int argc, char *argv[]){
                 if(input == loaded_characters.at(i).getName()){
                     pickedCharacter = true;
                     selected_characters.push_back(loaded_characters.at(i));
+                    loaded_characters.erase(loaded_characters.begin()+i);
                 }
             }
 
@@ -162,10 +164,18 @@ int main(int argc, char *argv[]){
                 while(!candySelected){
                     input = "";
                     getline(cin, input);
-                    for(int i = 0; i < loaded_candies.size(); i++){
-                        if(loaded_candies.at(i).name == input){
-                            candySelected = true;
-                            valid = true;
+                    for(int j = 0; j < loaded_candies.size(); j++){
+                        if(loaded_candies.at(j).name == input){
+                            if(selected_characters.at(i).getGold() >= loaded_candies.at(j).price){
+                                cout << players[i] << " has purchased " << loaded_candies.at(j).name << endl;
+                                selected_characters.at(i).setGold(selected_characters.at(i).getGold()-loaded_candies.at(j).price);
+                                selected_characters.at(i).addCandy(loaded_candies.at(j));
+                                candySelected = true;
+                                valid = true;
+                            } else {
+                                cout << "You don't have enough gold!" << endl;
+                            }
+                            
                         }
                     }
                 }
@@ -177,28 +187,79 @@ int main(int argc, char *argv[]){
         }
         
     }
+
     bool gameRunning = true;
     int turn = 0;
     int round = 1;
+
+    bool atCandyStore = false;
+    int atCandyStoreIndex = -1;
+
     Board board = Board();
     board.setPlayers(selected_characters);
+
+    int rand1, rand2, rand3;
+    srand(time(0));
+    rand1 = (rand() % 30-5) + 10;
+    rand2 = (rand() % 55-31) + 31;
+    rand3 = (rand() % 75-56) + 56;
+    cout << rand1 << ":" << rand2 << ":" << rand3 << endl;
+    vector<Candy> candymart_candy;
+    candymart_candy = loadCandies("files/candymartcandies.txt", candymart_candy);
+    CandyStore candymart = CandyStore("Candy Mart", candymart_candy, 3, rand1);
+    vector<Candy> sweetshop_candy;
+    sweetshop_candy = loadCandies("files/sweetshopcandies.txt", sweetshop_candy);
+    CandyStore sweetshop = CandyStore("Sweet Shop", sweetshop_candy, 3, rand2);
+    vector<Candy> cavitycave_candy;
+    cavitycave_candy = loadCandies("files/candymartcandies.txt", cavitycave_candy);
+    CandyStore cavitycave = CandyStore("Cavity Cave", cavitycave_candy, 3, rand3);
+    board.addCandyStore(candymart.getPosition(), candymart);
+    board.addCandyStore(sweetshop.getPosition(), sweetshop);
+    board.addCandyStore(cavitycave.getPosition(), cavitycave);
     while(gameRunning){
+        string selection_input;
         int turn_input = 0;
         board.displayBoard();
         cout << "Round " << round << endl;
         cout << "Turn " << turn+1 << " (" << players[turn] << ")" << endl;
         cout << "It's " << players[turn] << " turn\nPlease select a menu option:" << endl;
         cout << "1 ) Draw Card\n2 ) Eat Candy\n3 ) View Stats" << endl;
+        if(board.getPlayerPosition(turn) == rand1 || board.getPlayerPosition(turn) == rand2 || board.getPlayerPosition(turn) == rand3){
+            atCandyStore = true;
+            cout << "4 ) You have landed in front of a candy store, enter?" << endl;
+            if(board.getPlayerPosition(turn) == board.getCandyStore(0).getPosition()){
+                atCandyStoreIndex = 0;
+            } else if(board.getPlayerPosition(turn) == board.getCandyStore(1).getPosition()){
+                atCandyStoreIndex = 1;
+            } else if(board.getPlayerPosition(turn) == board.getCandyStore(2).getPosition()){
+                atCandyStoreIndex = 2;
+            }
+        }
+        string candy_input = "";
         cin >> turn_input;
         switch(turn_input){
             case 1:
-                board.drawCard(players[turn]);
+                board.drawCard(turn);
                 turn++;
                 break;
             case 2:
-                cout << "Here is your Inventory of candies: " << endl;
-                board.getPlayer(turn).printInventory();
-                turn++;
+                cout << "Here is your Inventory of candies:" << endl;
+                selected_characters.at(turn).printInventory();
+                cout << "Which candy would you like to eat?" << endl;
+                cin.clear();
+                cin.ignore(1000, '\n');
+                getline(cin, candy_input);
+                if(selected_characters.at(turn).findCandy(candy_input).name == candy_input){ 
+                    selected_characters.at(turn).eatCandy(candy_input);
+                    selected_characters.at(turn).removeCandy(candy_input);
+                    cout << players[turn] << " ate " << candy_input << endl; 
+                    candy_input = "";
+                    turn++;
+                } else{
+                    cin.clear();
+                    cin.ignore(1000, '\n');
+                    cout << "That candy does not exist!" << endl;
+                }
                 break;
             case 3:
                 cout << "Player Name: " << players[turn] << endl;
@@ -208,7 +269,42 @@ int main(int argc, char *argv[]){
                 cout << "Candies: " << endl;
                 selected_characters.at(turn).printInventory();
                 cout << "------------------------------" << endl;
-            default:    
+                break;
+            case 4: // Remove Later after testing
+                if(atCandyStore){
+                    printCandyStore(board.getCandyStore(atCandyStoreIndex).getCandyList());
+                    cout << "What would you like to buy?" << endl;
+                    getline(cin, candy_input);
+                    for(int i = 0; i < 3; i++){
+                        if(board.getCandyStore(atCandyStoreIndex).getCandyList().at(i).name == candy_input ){
+                            if(board.getCandyStore(atCandyStoreIndex).getCandyList().at(i).price <= selected_characters.at(turn).getGold()){
+                                if(selected_characters.at(turn).getCandyAmount() < 4){
+                                    selected_characters.at(turn).setGold(selected_characters.at(turn).getGold() - board.getCandyStore(atCandyStoreIndex).getCandyList().at(i).price);
+                                    turn++;
+                                } else{
+                                    cout << "You do not have sufficient room, would you like to swap one of your candies for this candy?" << endl;
+                                    cin >> selection_input;
+                                    if(selection_input == "y"){
+                                        cout << "Choose one to swap out" << endl;
+                                        getline(cin, candy_input); // Continue here 
+                                    }
+                                }
+                            } else{
+                                cout << "Insufficient funds." << endl;
+                            }
+                            
+                        }
+                    }
+                    atCandyStore = false;
+                    atCandyStoreIndex = -1;
+                } else{
+                    cout << "Invalid Input, please enter 1, 2, or 3." << endl;
+                }
+                break;
+            default:
+                cin.clear();
+                cin.ignore(1000, '\n');
+                cout << "Invalid Input, please enter 1, 2, or 3." << endl;
                 break;
         }
         if(turn == player_count){
@@ -216,6 +312,5 @@ int main(int argc, char *argv[]){
             turn = 0;
         }
     }
-
     return 0;
 }

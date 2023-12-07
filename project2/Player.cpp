@@ -33,10 +33,7 @@ Player::Player(string name, int stamina, double gold, std::string effect, Candy 
     }
 }
 
-void Player::printInventory(){
-    std::cout << "|[" << _inventory[0].name << "]|[" << _inventory[1].name << "]|" << std::endl;
-    std::cout << "|[" << _inventory[2].name << "]|[" << _inventory[3].name << "]|" << std::endl; 
-}
+
 
 string lower(string s){
     string lowered_string = s;
@@ -60,6 +57,10 @@ Candy Player::findCandy(std::string candy_name){
     }
 
     return foundCandy;
+}
+
+void Player::eatCandy(string name){
+    
 }
 
 bool Player::addCandy(Candy candy){
@@ -92,6 +93,7 @@ bool Player::removeCandy(std::string candy_name){
             for(int k = 0; k < 4; k++){
                 _inventory[k] = tempArray[k];
             }
+
             return true;
         }
     }
@@ -158,6 +160,11 @@ void Player::setEffect(std::string s){
 
 std::string Player::getEffect(){
     return _effect;
+}
+
+void Player::printInventory(){
+    std::cout << "|[" << _inventory[0].name << "]|[" << _inventory[1].name << "]|" << std::endl;
+    std::cout << "|[" << _inventory[2].name << "]|[" << _inventory[3].name << "]|" << std::endl; 
 }
 
 void playRockPaperScissors(Player players[2]){

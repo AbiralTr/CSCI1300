@@ -1,0 +1,3 @@
+Teeny Tiger Bar|Boosts player's stamina by 12 units|stamina|12|magical|10
+Poisonous Platypus Snack|Decreases opponents stamina by 10 units(strong)|stamina|-10|poison|10
+Chocolate Vaccine Kiss|Protects against all poison candies|other|5|immunity|30

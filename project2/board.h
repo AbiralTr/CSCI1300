@@ -45,7 +45,7 @@ public:
     int getCandyStoreCount() const;
     CandyStore getCandyStore(int index);
     int getPlayerPosition(int);
-    int drawCard(string player);
+    int drawCard(int index);
 
     bool calamityCheck(); // Psuedo-code
     bool riddle(int index); //Psuedo-code

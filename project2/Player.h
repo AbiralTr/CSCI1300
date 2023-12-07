@@ -35,4 +35,5 @@ class Player{
         void setInventory(Candy array[], const int CANDY_ARRAY_SIZE);
         int getPosition();
         void setPosition(int pos);
+        void eatCandy(string name);
 };

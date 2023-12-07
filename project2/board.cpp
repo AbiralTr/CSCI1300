@@ -2,11 +2,13 @@
 #include "candy.h"
 #include "player.h"
 #include <cstdlib>
+#include <time.h>
 #include <random>
 
 int randomNumber(int lowerBound, int upperBound){
     srand(time(0));
-    return (rand() % upperBound) + lowerBound;
+    int random_number = (rand() % upperBound) + lowerBound;
+    return random_number;
 }
 
 Board::Board()
@@ -48,13 +50,14 @@ void Board::displayTile(int position)
         return;
     }
     Tile target = _tiles[position];
-    cout << target.color << " ";
+    cout << target.color;
 
     if(position == _candy_store_position[0] || position == _candy_store_position[1] || position == _candy_store_position[2]){
-        cout << "!";
+        cout << " !";
     } else{
-        cout << " ";
+        cout << "  ";
     }
+    
     for(int i = 0; i < _players.size(); i++){
         if(position ==  _players.at(i).getPosition()){
             cout << i+1;
@@ -204,23 +207,117 @@ bool Board::movePlayer(int tile_to_move_forward, int index)
     return true;
 }
 
-int Board::drawCard(string player){
+int Board::drawCard(int index){
     string cards[6] = {"Matrix Magenta", "Emerald Green", "Beaten Blue", "Metaphysical Magenta", "Groundbreaking Green", "Black n Blue"};
     int tiles_moved = 0;
-    int pull = randomNumber(1, 9);
-    if(pull == 1 || pull == 2){
-        cout << "You pulled a Matrix Magenta card! You advance to the next purple tile." << endl;
-    } else if(pull == 3 || pull == 4){ 
-        cout << "You pulled a Emerald Green! You advance to the next green tile." << endl;
-    } else if(pull = 5 || pull == 6){
-        cout << "You pulled a Beaten Blue card! You advance to the next blue tile." << endl;
-    } else if(pull == 7){
-        cout << "You pulled a Metaphysical Magenta card! You advance to the next purple tile." << endl;
-    } else if(pull == 8){
-        cout << "You pulled a Groundbreaking Green card! You advance to the next purple tile." << endl;
-    } else if(pull == 9){
-        cout << "You pulled a Black n Blue card! You advance to the next purple tile." << endl;
+    int pull = randomNumber(1, 6);
+    int current_position = getPlayer(index).getPosition()+1;
+    int tile_ratio = current_position % 3;
+    switch(pull){
+        case 1:
+            cout << "You pulled a Matrix Magenta card! You advance to the next purple tile." << endl;
+            switch(tile_ratio){
+                case 0: // blue
+                    movePlayer(1, index);
+                    getPlayer(index).setPosition(current_position+1);
+                    break;
+                case 1: // purple
+                    movePlayer(3, index);
+                    getPlayer(index).setPosition(current_position+3);
+                    break;
+                case 2: // green
+                    movePlayer(2, index);
+                    getPlayer(index).setPosition(current_position+2);
+                    break;
+            }
+            break;
+        case 2:
+            cout << "You pulled a Emerald Green! You advance to the next green tile." << endl;
+            switch(tile_ratio){
+                case 0: // blue
+                    movePlayer(2, index);
+                    getPlayer(index).setPosition(current_position+2);
+                    break;
+                case 1: // purple
+                    movePlayer(1, index);
+                    getPlayer(index).setPosition(current_position+1);
+                    break;
+                case 2: // green
+                    movePlayer(3, index);
+                    getPlayer(index).setPosition(current_position+3);
+                    break;
+            }
+            break;
+        case 3:
+            cout << "You pulled a Beaten Blue card! You advance to the next blue tile." << endl;
+            switch(tile_ratio){
+                case 0: // blue
+                    movePlayer(3, index);
+                    getPlayer(index).setPosition(current_position+3);
+                    break;
+                case 1: // purple
+                    movePlayer(2, index);
+                    getPlayer(index).setPosition(current_position+2);
+                    break;
+                case 2: // green
+                    movePlayer(1, index);
+                    getPlayer(index).setPosition(current_position+1);
+                    break;
+            }
+            break;
+        case 4:
+            cout << "You pulled a Metaphysical Magenta card! You advance to the second purple tile." << endl;
+            switch(tile_ratio){
+                case 0: // blue
+                    movePlayer(4, index);
+                    getPlayer(index).setPosition(current_position+4);
+                    break;
+                case 1: // purple
+                    movePlayer(6, index);
+                    getPlayer(index).setPosition(current_position+6);
+                    break;
+                case 2: // green
+                    movePlayer(5, index);
+                    getPlayer(index).setPosition(current_position+5);
+                    break;
+            }
+            break;
+        case 5:
+            cout << "You pulled a Groundbreaking Green card! You advance to the second green tile." << endl;
+            switch(tile_ratio){
+                case 0: // blue
+                    movePlayer(5, index);
+                    getPlayer(index).setPosition(current_position+5);
+                    break;
+                case 1: // purple
+                    movePlayer(4, index);
+                    getPlayer(index).setPosition(current_position+4);
+                    break;
+                case 2: // green
+                    movePlayer(6, index);
+                    getPlayer(index).setPosition(current_position+6);
+                    break;
+            }
+            break;
+        case 6:
+            cout << "You pulled a Black n Blue card! You advance to the second blue tile." << endl;
+                switch(tile_ratio){
+                    case 0: // blue
+                        movePlayer(6, index);
+                        getPlayer(index).setPosition(current_position+6);
+                        break;
+                    case 1: // purple
+                        movePlayer(5, index);
+                        getPlayer(index).setPosition(current_position+5);
+                        break;
+                    case 2: // green
+                        movePlayer(4, index);
+                        getPlayer(index).setPosition(current_position+4);
+                        break;
+                }
+            break;
     }
+    
 
     return tiles_moved;
 }
