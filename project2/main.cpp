@@ -7,6 +7,7 @@
 
 using namespace std;
 
+// Load Candy Function takes in a file name and Candy vector
 vector<Candy> loadCandies(string file_name, vector<Candy> candyVector){
     string name;
     string description;
@@ -46,6 +47,7 @@ vector<Candy> loadCandies(string file_name, vector<Candy> candyVector){
     return loadedVector;
 }
 
+// Load Character Functions takes in file name and Player vector
 vector<Player> loadCharacters(string file_name, vector<Player> playerVector){
     string name;
     int stamina = 0;
@@ -103,6 +105,7 @@ vector<Player> loadCharacters(string file_name, vector<Player> playerVector){
     return loadedVector;
 }
 
+// Load Hidden Treasure Function takes in file name and Hidden Treasure Vector
 vector<hiddenTreasure> loadHiddenTreasures(string file_name, vector<hiddenTreasure> treasureVector){
     string answer;
     string riddle;
@@ -138,6 +141,7 @@ vector<hiddenTreasure> loadHiddenTreasures(string file_name, vector<hiddenTreasu
     return loadedVector;
 }
 
+// Print Character Function for ease of use, prints all data (excluding owner data member) of a character
 void printCharacters(vector<Player> characters){
     for(int i = 0; i < characters.size(); i++){
         cout << "Name: " << characters.at(i).getName() << endl;
@@ -149,6 +153,7 @@ void printCharacters(vector<Player> characters){
     }
 }
 
+// Print Candy Store Function for ease of use, prints the set stock of a candy vector, providing all data of Candy struct
 void printCandyStore(vector<Candy> candies, int range){
     for(int i = 0; i < range; i++){
         cout << "Name: " << candies.at(i).name << endl;
@@ -161,25 +166,27 @@ void printCandyStore(vector<Candy> candies, int range){
 }
 
 int main(int argc, char *argv[]){
+    // Load Characters and Candies
     vector<Candy> loaded_candies;
     vector<Player> loaded_characters;
 
     loaded_candies = loadCandies("files/candies.txt", loaded_candies);
     loaded_characters = loadCharacters("files/characters.txt", loaded_characters);
+
+    // Configuring Player Data and Character Selection
     vector<Player> selected_characters;
-    
     int player_count = 0;
 
     cout << "Welcome to the game of candyland. Please enter the number of participants:" << endl;
     cin >> player_count;
-    while(player_count < 2 || player_count > 4){
+    while(player_count < 2 || player_count > 4){ // Multiplayer Function (min 2, max 4)
         cout << "At least 2 players required, at most 4" << endl;
         cin.clear();
         cin.ignore(1000, '\n');
         cin >> player_count;
     }
     string players[player_count];
-    for(int i = 0; i < player_count; i++){
+    for(int i = 0; i < player_count; i++){ // Loop through each "player", and allow them to connect to a "character" (Player Class), via the owner data member
         string input;
         bool pickedCharacter = false;
         cout << "Enter player name:" << endl;
@@ -203,6 +210,7 @@ int main(int argc, char *argv[]){
             }
         }
         
+        // Giving each player the chance to visit a Candy Store before the game begins
         cout << "Do you want to visit the candy store?(y/n)" << endl;
         bool valid = false;
         bool candySelected = false;
@@ -239,17 +247,21 @@ int main(int argc, char *argv[]){
         
     }
 
+    // Initializing Game Loop, Turn and Round Pattern, as well as tiles moved per turn
     bool gameRunning = true;
     int turn = 0;
     int round = 1;
     int tiles_moved = 0;
 
+    // Initializing Variables to check if a player is in the same location of a Candy Store
     bool atCandyStore = false;
     int atCandyStoreIndex = -1;
 
+    // Creation of Board Object + Setting the players within the board object
     Board board = Board();
     board.setPlayers(selected_characters);
 
+    // Setting up Random Position Elements (Candy Store + Hidden Treasures)
     int rand1, rand2, rand3;
     srand(time(0));
     rand1 = (rand() % 27) + 1;
@@ -279,19 +291,22 @@ int main(int argc, char *argv[]){
         board.addTreasure(loaded_treasures.at(i).getPos(),loaded_treasures.at(i));
     }
     
-
+    // Game Loop Begins
     while(gameRunning){
+        // Creating Variables for Input + Initializing Variables for Random Chances
         string selection_input;
         int turn_input = 0;
         bool foundCandy = false;
         int calamityChance = 0;
         int calamityRand = 0;
-
+        // Creating Variables to keep track of "Same Tile Restraints"
         bool onSameTile = false;
         int firstPlayerIndex = 0;
         int secondPlayerIndex = 0;
 
         board.displayBoard();
+
+        // Checking if the player is currently restricted from taking a turn due to "lost turn"
         if(selected_characters.at(turn).getLostTurn()){
             cout << "Unfortunately, " << players[turn] << " lost this turn from last round." << endl;
             selected_characters.at(turn).setLostTurn(false);
@@ -303,10 +318,13 @@ int main(int argc, char *argv[]){
             }
             continue;
         }
+
+        // Displaying Round and Turn Data + Main Menu
         cout << "Round " << round << endl;
         cout << "Turn " << turn+1 << " (" << players[turn] << ")" << endl;
         cout << "It's " << players[turn] << " turn\nPlease select a menu option:" << endl;
         cout << "1 ) Draw Card\n2 ) Eat Candy\n3 ) View Stats" << endl;
+        // If the player is in the same spot as a Candy Store, provide new input option
         if(board.getPlayerPosition(turn) == rand1 || board.getPlayerPosition(turn) == rand2 || board.getPlayerPosition(turn) == rand3){
             atCandyStore = true;
             cout << "4 ) You have landed in front of a candy store, enter?" << endl;
@@ -321,8 +339,11 @@ int main(int argc, char *argv[]){
         string candy_input = "";
         cin >> turn_input;
         Card pulled_card;
+
+        // Main Menu Input Switch
         switch(turn_input){
-            case 1:
+            case 1: // Draw Card Option
+                // If player does not have Stamina, ignore turn
                 if(selected_characters.at(turn).getStamina() < 5){
                     cout << players[turn] << " does not have the minimum amount of stamina (5) required to move!" << endl;
                     selected_characters.at(turn).setStamina(selected_characters.at(turn).getStamina() + 3);
@@ -349,6 +370,7 @@ int main(int argc, char *argv[]){
                             cout << " You advance to the next blue card." << endl;
                         }
                     }
+                    // Checking for Special Tiles + Calamities
                     if(board.getTile(board.getPlayerPosition(turn)).isSpecial){
                         Tile current_tile = board.getTile(board.getPlayerPosition(turn));
                         cout << "You landed on a " << current_tile.tile_type << endl;
@@ -421,19 +443,19 @@ int main(int argc, char *argv[]){
                                         cin >> confirm_input;
                                         if(confirm_input == "y"){
                                             cout << "You used one of your magic candies. You regain your next turn." << endl;
-                                            stuck = false;
                                             selected_characters.at(turn).removeCandy(selected_characters.at(turn).getCandy(i).name);
                                             selected_characters.at(turn).setLostTurn(false);
-                                        } else{
+                                        } else{    
                                             cout << "You failed to use your magic candy. You lose your next turn." << endl;
                                             selected_characters.at(turn).setLostTurn(true);
                                         }
+                                        stuck = false;
                                     }
                                 }
                             }
                         }
                     }
-                    
+                    // Same Tile Constraints
                     for(int i = 0; i < selected_characters.size(); i++){
                         if(board.getPlayerPosition(turn) == board.getPlayerPosition(i) && players[turn] != players[i]){
                             onSameTile = true;
@@ -468,7 +490,7 @@ int main(int argc, char *argv[]){
                         }   
                     }
                     
-                    
+                    // Hidden Treasure Checking + Riddles
                     if(board.getPlayerPosition(turn) == hiddenPos1){
                         cout << "You have discovered hidden treasure!\nSolve this riddle to get a reward!" << endl;
                         board.getTreasure(0).setSolver(selected_characters.at(turn));
@@ -477,7 +499,6 @@ int main(int argc, char *argv[]){
                         cin.clear();
                         cin.ignore(1000, '\n');
                         getline(cin, answer);
-                        cout << answer << " " << board.getTreasure(0).getAnswer();
                         if(answer == board.getTreasure(0).getAnswer()){
                             cout << "That is correct!" << endl;
                             cout << "The reward is " << board.getTreasure(0).getType() << endl;
@@ -511,14 +532,17 @@ int main(int argc, char *argv[]){
                         }
                     }
                     
+                    // Hailstorm Chances are Rolled
                     int hailstormChance = (rand()%100);
                     if(hailstormChance < 5){
                         for(int i = 0; i < selected_characters.size() ; i++){
                             int random_tiles = (rand()%10)+1;
-                            board.movePlayer(-random_tiles, i);
+                            board.movePlayer(-1*random_tiles, i);
                         }
+                        cout << "HAILSTORM WARNING, ALL PLAYERS MOVED BACK A RANDOM NUMBER OF TILES!" << endl;
                     }
 
+                    // Board is shown updated after all activities have ended in the turn
                     cout << "\nHere is an updated board:" << endl;
                     board.displayBoard();
                     if(!selected_characters.at(turn).getExtraTurn()){
@@ -529,7 +553,7 @@ int main(int argc, char *argv[]){
                     }
                 }
                 break;
-            case 2:
+            case 2: // Eat Candy Option
                 cout << "Here is your Inventory of candies:" << endl;
                 selected_characters.at(turn).printInventory();
                 cout << "Which candy would you like to eat?" << endl;
@@ -540,7 +564,7 @@ int main(int argc, char *argv[]){
                     int value = selected_characters.at(turn).eatCandy(candy_input);
                     selected_characters.at(turn).removeCandy(candy_input);
                     cout << players[turn] << " ate " << candy_input << endl; 
-                    if(value < 0){
+                    if(value < 0){ // If the candy is "poisonous", you can target another player after you've eaten it
                         cout << "Who do you want to deal this damage to?" << endl;
                         string selected_player;
                         getline(cin, selected_player);
@@ -566,7 +590,7 @@ int main(int argc, char *argv[]){
                     cout << "That candy does not exist!" << endl;
                 }
                 break;
-            case 3:
+            case 3: // Display Data Option
                 cout << "Player Name: " << players[turn] << endl;
                 cout << "Character Name: " << selected_characters.at(turn).getName() << endl;
                 cout << "Stamina: " << selected_characters.at(turn).getStamina() << endl;
@@ -575,7 +599,7 @@ int main(int argc, char *argv[]){
                 selected_characters.at(turn).printInventory();
                 cout << "------------------------------" << endl;
                 break;
-            case 4:
+            case 4: // Candy Store Option (Only accessible when in the same pos of a Candy Store on the board)
                 if(atCandyStore){
                     printCandyStore(board.getCandyStore(atCandyStoreIndex).getCandyList(), 3);
                     cout << "What would you like to buy?" << endl;
@@ -637,10 +661,7 @@ int main(int argc, char *argv[]){
                     cout << "Invalid Input, please enter 1, 2, or 3." << endl;
                 }
                 break;
-            case 8: // Remove after Testing
-                gameRunning = false; 
-                break;
-            default:
+            default: // If recieved wrong main menu input, ask for input again
                 cin.clear();
                 cin.ignore(1000, '\n');
                 cout << "Invalid Input, please enter 1, 2, or 3." << endl;
@@ -652,17 +673,20 @@ int main(int argc, char *argv[]){
         cin.ignore(1000, '\n');
         system("cls"); // "cls for Windows, clear for MacOS"
 
+        // If the turn is equal to the player count, increase round by one and reset the turn
         if(turn == player_count){
             round += 1;
             turn = 0;
             atCandyStore = false;
         }
+        // If one of the players made it to the end, end the game loop and declare them as the winner
         if(board.getPlayerPosition(turn) == 82){
             gameRunning = false;
             string winner = players[turn];
         } 
     }
 
+    // Declaring the winner + writing the outcome to a file name "windata.txt"
     cout << players[turn] << " has won the game!" << endl;
     cout << "Performance Statistics have been written in the win file!" << endl;
     ofstream winfile("windata.txt");

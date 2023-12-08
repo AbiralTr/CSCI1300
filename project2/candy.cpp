@@ -3,6 +3,7 @@
 
 using namespace std;
 
+// Default and Paramaterized Constructors
 CandyStore::CandyStore(){
 
 }
@@ -14,6 +15,7 @@ CandyStore::CandyStore(string name, vector<Candy> list, const int CANDY_LIST_SIZ
     _position = position;
 }
 
+// Member Function Definitions
 string CandyStore::getName(){
     return _store_name;
 }

@@ -5,11 +5,13 @@
 #include <time.h>
 #include <random>
 
+// Default Constructor for Board Object
 Board::Board()
 {
     resetBoard();
 }
 
+// Board Member Function Definitions
 void Board::resetBoard()
 {   
     srand(time(0));
@@ -180,31 +182,6 @@ Player Board::getPlayer(int index){
     return _players.at(index);
 }
 
-bool Board::calamityCheck(){
-
-    bool calamity;
-    /*
-    Creates a Rand between 1-10 (inclusive)
-    1-4 = Calamity Happens, 5-10, Calamity does NOT happen
-    Creates another rand to choose which calamity occurs
-
-    Returns true if Calamity happens
-    */
-   return calamity;
-}
-
-bool Board::riddle(int index){
-    bool answer_correct;
-    /*
-    Attaches to whichever player chooses to accept the riddle via index
-    opens "riddles.txt" for a number of riddles,
-    creates rand to randomly choose any line from the file that represents a riddle
-
-    Returns true if the player got it correct, rewards accordingly using the index to decide which player to reward
-    */
-   return answer_correct;
-}
-
 bool Board::movePlayer(int tile_to_move_forward, int index)
 {
     int new_player_position =  _players.at(index).getPosition() + tile_to_move_forward;
@@ -217,6 +194,7 @@ bool Board::movePlayer(int tile_to_move_forward, int index)
     return true;
 }
 
+// Draw Card function, returns the card that was drawn
 Card Board::drawCard(int index){
     srand(time(0));
     string name;
@@ -362,6 +340,7 @@ Card Board::drawCard(int index){
     return card;
 }
 
+// Hidden Treasure Constructor + Default Constructor
 hiddenTreasure::hiddenTreasure(){
 
 }
@@ -372,6 +351,7 @@ hiddenTreasure::hiddenTreasure(string r, string a){
 
 }
 
+// Hidden Treasure Member Function Definitions
 string hiddenTreasure::getRiddle(){
     return riddle;
 }
