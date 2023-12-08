@@ -41,7 +41,7 @@ class Player{
         bool getExtraTurn();
         void setLostTurn(bool b);
         bool getLostTurn();
-        void eatCandy(string name);
+        int eatCandy(string name);
         void giveCandy(Player p, Candy c);
         Candy getCandy(int i);
 };

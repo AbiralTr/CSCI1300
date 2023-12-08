@@ -174,6 +174,8 @@ int main(int argc, char *argv[]){
     cin >> player_count;
     while(player_count < 2 || player_count > 4){
         cout << "At least 2 players required, at most 4" << endl;
+        cin.clear();
+        cin.ignore(1000, '\n');
         cin >> player_count;
     }
     string players[player_count];
@@ -365,12 +367,13 @@ int main(int argc, char *argv[]){
                                 selected_characters.at(turn).setGold(0);
                             }
                         } else if(current_tile.tile_type == "Gingerbread House"){
-                            cout << "You were transported back to your previous position " << tiles_moved << " tiles back, and you lost one of your candies..." << endl;
+                            cout << "You were transported back to your previous position " << tiles_moved << " tiles back" << endl; 
                             board.movePlayer(-1*tiles_moved, turn);
                             for(int i = 0; i < 4; i++){
                                 if(!foundCandy){
                                     if(selected_characters.at(turn).getCandy(i).candy_type == "immunity"){
                                         selected_characters.at(turn).removeCandy(selected_characters.at(turn).getCandy(i).name);
+                                        cout << "Also, you lost one of your immunity candies..." << endl;
                                         foundCandy = true;
                                     }
                                 }
@@ -525,9 +528,23 @@ int main(int argc, char *argv[]){
                 cin.ignore(1000, '\n');
                 getline(cin, candy_input);
                 if(selected_characters.at(turn).findCandy(candy_input).name == candy_input){ 
-                    selected_characters.at(turn).eatCandy(candy_input);
+                    int value = selected_characters.at(turn).eatCandy(candy_input);
                     selected_characters.at(turn).removeCandy(candy_input);
                     cout << players[turn] << " ate " << candy_input << endl; 
+                    if(value < 0){
+                        cout << "Who do you want to deal this damage to?" << endl;
+                        string selected_player;
+                        getline(cin, selected_player);
+                        for(int i = 0; i < player_count; i++){
+                            if(players[i] == selected_player){
+                                cout << " delt " << value << " stamina damage to " << players[i] << endl;
+                                selected_characters.at(i).setStamina(selected_characters.at(i).getStamina() + value);
+                                if(selected_characters.at(i).getStamina() == 0){
+                                    selected_characters.at(i).setStamina(0);
+                                }
+                            }
+                        }
+                    }
                     candy_input = "";
                     if(!selected_characters.at(turn).getExtraTurn()){ 
                         turn++;
@@ -549,38 +566,62 @@ int main(int argc, char *argv[]){
                 selected_characters.at(turn).printInventory();
                 cout << "------------------------------" << endl;
                 break;
-            case 4: // Remove Later after testing
+            case 4:
                 if(atCandyStore){
                     printCandyStore(board.getCandyStore(atCandyStoreIndex).getCandyList(), 3);
                     cout << "What would you like to buy?" << endl;
-                    getline(cin, candy_input);
-                    for(int i = 0; i < 3; i++){
-                        if(board.getCandyStore(atCandyStoreIndex).getCandyList().at(i).name == candy_input ){
-                            if(board.getCandyStore(atCandyStoreIndex).getCandyList().at(i).price <= selected_characters.at(turn).getGold()){
-                                if(selected_characters.at(turn).getCandyAmount() < 4){
-                                    selected_characters.at(turn).setGold(selected_characters.at(turn).getGold() - board.getCandyStore(atCandyStoreIndex).getCandyList().at(i).price);
-                                    selected_characters.at(turn).addCandy(board.getCandyStore(atCandyStoreIndex).getCandyList().at(i));
-                                    turn++;
-                                } else{
-                                    cout << "You do not have sufficient room, would you like to swap one of your candies for this candy?" << endl;
-                                    cin >> selection_input;
-                                    if(selection_input == "y"){
-                                        cout << "Choose one to swap out" << endl;
-                                        cin.clear();
-                                        cin.ignore(1000, '\n');
-                                        getline(cin, candy_input);
-                                        selected_characters.at(turn).removeCandy(candy_input);
-                                        selected_characters.at(turn).setGold(selected_characters.at(turn).getGold() - board.getCandyStore(atCandyStoreIndex).getCandyList().at(i).price);
-                                        selected_characters.at(turn).addCandy(board.getCandyStore(atCandyStoreIndex).getCandyList().at(i));
-                                        turn++;
-                                    }
-                                }
-                            } else{
-                                cout << "Insufficient funds." << endl;
+                    bool candyFound = false;
+                    int candyIndex = 0;
+                    while(!candyFound){
+                        cin.clear();
+                        cin.ignore(1000, '\n');
+                        getline(cin, selection_input);
+                        for(int i = 0; i < board.getCandyStore(atCandyStoreIndex).getCandyList().size(); i++){
+                            if(selection_input == board.getCandyStore(atCandyStoreIndex).getCandyList().at(i).name){
+                                candyFound = true;
+                                candyIndex = i;
                             }
-                            
                         }
                     }
+                    if(selected_characters.at(turn).getGold() >= board.getCandyStore(atCandyStoreIndex).getCandyList().at(candyIndex).price){
+                        if(selected_characters.at(turn).getCandyAmount() == 4){
+                            cout << "Insufficient Space, would you like to exchange a candy for this one?" << endl;
+                            string confirm;
+                            cin >> confirm;
+                            if(confirm == "y"){
+                                selected_characters.at(turn).printInventory();
+                                cout << "Which candy would you like to replace?" << endl;
+                                string replaced_candy;
+                                bool found_replaced_candy = false;
+                                cin.clear();
+                                cin.ignore(1000, '\n');
+                                getline(cin, replaced_candy);
+                                for(int i = 0; i < 4; i++){
+                                    if(found_replaced_candy){
+                                        continue;
+                                    }
+                                    if(replaced_candy == selected_characters.at(turn).getCandy(i).name){
+                                        found_replaced_candy = true;
+                                        selected_characters.at(turn).removeCandy(replaced_candy);
+                                    }
+                                }
+                                if(found_replaced_candy){
+                                    cout << "Successfully Purchased and Stored " << board.getCandyStore(atCandyStoreIndex).getCandyList().at(candyIndex).name << endl;
+                                    selected_characters.at(turn).setGold(selected_characters.at(turn).getGold() - board.getCandyStore(atCandyStoreIndex).getCandyList().at(candyIndex).price);
+                                    selected_characters.at(turn).addCandy(board.getCandyStore(atCandyStoreIndex).getCandyList().at(candyIndex));
+                                }
+                            } else{
+                                cout << "Your pockets are too full of good stuff! Maybe next time!" << endl;
+                            }
+                        } else {
+                            cout << "Successfully Purchased and Stored " << board.getCandyStore(atCandyStoreIndex).getCandyList().at(candyIndex).name << endl;
+                            selected_characters.at(turn).setGold(selected_characters.at(turn).getGold() - board.getCandyStore(atCandyStoreIndex).getCandyList().at(candyIndex).price);
+                            selected_characters.at(turn).addCandy(board.getCandyStore(atCandyStoreIndex).getCandyList().at(candyIndex));
+                        }
+                    } else{
+                        cout << "Insufficient Funds." << endl;
+                    }
+
                     atCandyStore = false;
                     atCandyStoreIndex = -1;
                 } else{
@@ -601,12 +642,25 @@ int main(int argc, char *argv[]){
         cin.clear();
         cin.ignore(1000, '\n');
         system("cls"); // "cls for Windows, clear for MacOS"
+
         if(turn == player_count){
             round += 1;
             turn = 0;
             atCandyStore = false;
         }
-        
+        if(board.getPlayerPosition(turn) == 82){
+            gameRunning = false;
+            string winner = players[turn];
+        } 
     }
+
+    cout << players[turn] << " has won the game!" << endl;
+    cout << "Performance Statistics have been written in the win file!" << endl;
+    ofstream winfile("windata.txt");
+    winfile << "Winner: " << players[turn] << endl;
+    winfile << "Character used: " << selected_characters.at(turn).getName() << endl;
+    winfile << "Total Gold: " << selected_characters.at(turn).getGold() << endl;
+    winfile << "Candies Remaining: " << selected_characters.at(turn).getCandy(0).name << ", " << selected_characters.at(turn).getCandy(1).name << ", " << selected_characters.at(turn).getCandy(2).name << ", " << selected_characters.at(turn).getCandy(3).name << endl;
+
     return 0;
 }

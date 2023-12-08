@@ -74,8 +74,9 @@ Candy Player::findCandy(std::string candy_name){
     return foundCandy;
 }
 
-void Player::eatCandy(string name){
+int Player::eatCandy(string name){
     int index = 0;
+    int value = 0;
     bool found = false;
     for(int i = 0; i < 4; i ++){
         if(_inventory[i].name == name){
@@ -85,14 +86,22 @@ void Player::eatCandy(string name){
     }
     if(found){
         if(_inventory[index].effect_type == "stamina"){
-            _stamina += _inventory[index].value;
-            cout << "You gained " << _inventory[index].value << " stamina" << endl;
+            if(_inventory[index].candy_type == "poison"){
+                value = _inventory[index].value;
+                cout << "This candy deals " << -_inventory[index].value << " stamina damage" << endl;
+            } else{
+                _stamina += _inventory[index].value;
+                value = _inventory[index].value;
+                cout << "You gained " << _inventory[index].value << " stamina" << endl;
+            }
         } else{
             cout << "You have gained the effect " << _inventory[index].description << endl;
             _effect = _inventory[index].description;
         }
         removeCandy(name);
     }
+
+    return value;
 }
 
 Candy Player::getCandy(int i){

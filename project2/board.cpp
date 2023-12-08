@@ -207,9 +207,10 @@ bool Board::riddle(int index){
 bool Board::movePlayer(int tile_to_move_forward, int index)
 {
     int new_player_position =  _players.at(index).getPosition() + tile_to_move_forward;
-    if(new_player_position < 0 || new_player_position >= _BOARD_SIZE)
-    {
+    if(new_player_position < 0){
         return false;
+    } else if(new_player_position >= _BOARD_SIZE){
+        new_player_position = 82;
     }
     _players.at(index).setPosition(new_player_position);
     return true;
@@ -355,7 +356,7 @@ Card Board::drawCard(int index){
                 }
             break;
     }
-    
+
     Card card{name, isDouble, tiles_moved, color};
     return card;
 }
