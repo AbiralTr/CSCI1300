@@ -510,6 +510,15 @@ int main(int argc, char *argv[]){
                             board.getTreasure(2).reward();
                         }
                     }
+                    
+                    int hailstormChance = (rand()%100);
+                    if(hailstormChance < 5){
+                        for(int i = 0; i < selected_characters.size() ; i++){
+                            int random_tiles = (rand()%10)+1;
+                            board.movePlayer(-random_tiles, i);
+                        }
+                    }
+
                     cout << "\nHere is an updated board:" << endl;
                     board.displayBoard();
                     if(!selected_characters.at(turn).getExtraTurn()){

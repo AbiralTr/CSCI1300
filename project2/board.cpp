@@ -19,6 +19,7 @@ void Board::resetBoard()
     string current_color;
     for (int i = 0; i < _BOARD_SIZE - 1; i++){
         int specialChance = (rand()%4);
+
         current_color = COLORS[i % COLOR_COUNT];
         if(specialChance == 0){
             new_tile = {current_color, true};
