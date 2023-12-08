@@ -1,3 +1,11 @@
 Frosty Fizz|Boosts player's stamina by 10 units|stamina|10|magical|10
 Toxic Taffy|Decreases opponents stamina by 20 units(strong)|stamina|-20|poison|25
 Caramel Comet|Protects against all poison candies|other|3|immunity|25
+Robbers Repel|Protects a player from being robbed by another player|other|5|defense|15
+Breezy Butterscotch|Replenishes a player's stamina by 5|stamina|5|magical|5
+Lucky Licorice|Can be used to negate certain calamities|other|0|magical|10
+Fearsome Fudge|Stings the player that eats it with fear, losing stamina|stamina|-10|poison|15
+Staunchy Skittles|Replenishes a player's stamina by 50 units, also defends|stamina|50|magical|30
+Breezy Buttermilk|Replenishes a player's stamina by 14 units|stamina|50|magical|12
+Luminous Licks|Protects against potential licks on your gold|other|5|defense|10
+

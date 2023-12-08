@@ -36,6 +36,7 @@ vector<Candy> loadCandies(string file_name, vector<Candy> candyVector){
 
         current_candy.name = stats.at(0);
         current_candy.description = stats.at(1);
+        current_candy.effect_type = stats.at(2);
         current_candy.candy_type = stats.at(4);
         current_candy.value = stoi(stats.at(3));
         current_candy.price = stod(stats.at(5));
@@ -51,6 +52,8 @@ vector<Player> loadCharacters(string file_name, vector<Player> playerVector){
     double gold = 0.0;
     Candy candies[4];
     vector<Player> loadedVector;
+    vector<Candy> loadedCharacterCandies;
+    loadedCharacterCandies = loadCandies("files/candies.txt", loadedCharacterCandies);
 
     ifstream file(file_name);
     if(file.fail()){
@@ -76,7 +79,7 @@ vector<Player> loadCharacters(string file_name, vector<Player> playerVector){
         int index = 0;
         string candyArr[4];
         for(int i = 0; i < candyLine.length(); i++){
-            if(candyLine[i] == ',' || i == candyLine.length()){
+            if(candyLine[i] == ','){
                 candyArr[index] = candyName;
                 index++;
                 candyName = "";
@@ -84,12 +87,53 @@ vector<Player> loadCharacters(string file_name, vector<Player> playerVector){
                 candyName += candyLine[i];
             }
         }
+
         for(int i = 0; i < index; i++){
             Candy current_candy{candyArr[i]};
+            for(int i = 0; i < loadedCharacterCandies.size(); i++){
+                if(current_candy.name == loadedCharacterCandies.at(i).name){
+                    current_candy = loadedCharacterCandies.at(i);
+                }
+            }
             candies[i] = current_candy;
         }   
         Player current_player = Player(name, stamina, gold, "", candies, sizeof(candies));
         loadedVector.push_back(current_player);
+    }
+    return loadedVector;
+}
+
+vector<hiddenTreasure> loadHiddenTreasures(string file_name, vector<hiddenTreasure> treasureVector){
+    string answer;
+    string riddle;
+    vector<hiddenTreasure> loadedVector;
+
+    ifstream file(file_name);
+    if(file.fail()){
+        cout << "Failed to open file" << endl;
+        return loadedVector;
+    }
+    string line;
+    while(getline(file, line)){
+        if(line.length() == 0){
+            continue;
+        }
+        string word;
+        stringstream ss(line);
+        vector<string> stats;
+        while(getline(ss, word, '|')){
+            stats.push_back(word);
+        }
+        riddle = stats.at(0);
+        answer = stats.at(1);
+ 
+        hiddenTreasure current_treasure = hiddenTreasure(riddle, answer);
+        
+        srand(time(0));
+        int type_rand = (rand()%4);
+        current_treasure.setType(type_rand);
+        loadedVector.push_back(current_treasure);
+
     }
     return loadedVector;
 }
@@ -105,8 +149,8 @@ void printCharacters(vector<Player> characters){
     }
 }
 
-void printCandyStore(vector<Candy> candies){
-    for(int i = 0; i < candies.size(); i++){
+void printCandyStore(vector<Candy> candies, int range){
+    for(int i = 0; i < range; i++){
         cout << "Name: " << candies.at(i).name << endl;
         cout << "Description: " << candies.at(i).description << endl;
         cout << "Type: " << candies.at(i).candy_type << endl;
@@ -128,6 +172,10 @@ int main(int argc, char *argv[]){
 
     cout << "Welcome to the game of candyland. Please enter the number of participants:" << endl;
     cin >> player_count;
+    while(player_count < 2 || player_count > 4){
+        cout << "At least 2 players required, at most 4" << endl;
+        cin >> player_count;
+    }
     string players[player_count];
     for(int i = 0; i < player_count; i++){
         string input;
@@ -159,12 +207,12 @@ int main(int argc, char *argv[]){
         while(!valid){
             cin >> input;
             if(input == "y"){
-                printCandyStore(loaded_candies);
+                printCandyStore(loaded_candies, 4);
                 cout << "Select a valid candy:" << endl;
                 while(!candySelected){
                     input = "";
                     getline(cin, input);
-                    for(int j = 0; j < loaded_candies.size(); j++){
+                    for(int j = 0; j < 4; j++){
                         if(loaded_candies.at(j).name == input){
                             if(selected_characters.at(i).getGold() >= loaded_candies.at(j).price){
                                 cout << players[i] << " has purchased " << loaded_candies.at(j).name << endl;
@@ -186,11 +234,13 @@ int main(int argc, char *argv[]){
             }
         }
         
+        
     }
 
     bool gameRunning = true;
     int turn = 0;
     int round = 1;
+    int tiles_moved = 0;
 
     bool atCandyStore = false;
     int atCandyStoreIndex = -1;
@@ -200,10 +250,9 @@ int main(int argc, char *argv[]){
 
     int rand1, rand2, rand3;
     srand(time(0));
-    rand1 = (rand() % 30-5) + 10;
-    rand2 = (rand() % 55-31) + 31;
-    rand3 = (rand() % 75-56) + 56;
-    cout << rand1 << ":" << rand2 << ":" << rand3 << endl;
+    rand1 = (rand() % 27) + 1;
+    rand2 = (rand() % 54) + 28;
+    rand3 = (rand() % 82) + 55;
     vector<Candy> candymart_candy;
     candymart_candy = loadCandies("files/candymartcandies.txt", candymart_candy);
     CandyStore candymart = CandyStore("Candy Mart", candymart_candy, 3, rand1);
@@ -216,10 +265,42 @@ int main(int argc, char *argv[]){
     board.addCandyStore(candymart.getPosition(), candymart);
     board.addCandyStore(sweetshop.getPosition(), sweetshop);
     board.addCandyStore(cavitycave.getPosition(), cavitycave);
+
+    int hiddenPos1 = (rand() % 27);
+    int hiddenPos2 = (rand() % 54) + 28;
+    int hiddenPos3 = (rand() % 82) + 55;
+    int hiddenPosArr[] = {hiddenPos1, hiddenPos2, hiddenPos3};
+    vector<hiddenTreasure> loaded_treasures;
+    loaded_treasures = loadHiddenTreasures("files/riddles.txt", loaded_treasures);
+    for(int i = 0; i < loaded_treasures.size(); i++){
+        loaded_treasures.at(i).setPos(hiddenPosArr[i]);
+        board.addTreasure(loaded_treasures.at(i).getPos(),loaded_treasures.at(i));
+    }
+    
+
     while(gameRunning){
         string selection_input;
         int turn_input = 0;
+        bool foundCandy = false;
+        int calamityChance = 0;
+        int calamityRand = 0;
+
+        bool onSameTile = false;
+        int firstPlayerIndex = 0;
+        int secondPlayerIndex = 0;
+
         board.displayBoard();
+        if(selected_characters.at(turn).getLostTurn()){
+            cout << "Unfortunately, " << players[turn] << " lost this turn from last round." << endl;
+            selected_characters.at(turn).setLostTurn(false);
+            turn++;
+            if(turn == player_count){
+                round += 1;
+                turn = 0;
+                atCandyStore = false;
+            }
+            continue;
+        }
         cout << "Round " << round << endl;
         cout << "Turn " << turn+1 << " (" << players[turn] << ")" << endl;
         cout << "It's " << players[turn] << " turn\nPlease select a menu option:" << endl;
@@ -237,10 +318,204 @@ int main(int argc, char *argv[]){
         }
         string candy_input = "";
         cin >> turn_input;
+        Card pulled_card;
         switch(turn_input){
             case 1:
-                board.drawCard(turn);
-                turn++;
+                if(selected_characters.at(turn).getStamina() < 5){
+                    cout << players[turn] << " does not have the minimum amount of stamina (5) required to move!" << endl;
+                    selected_characters.at(turn).setStamina(selected_characters.at(turn).getStamina() + 3);
+                    turn++;
+                } else{
+                    pulled_card = board.drawCard(turn);
+                    tiles_moved = pulled_card.tiles_moved;
+                    selected_characters.at(turn).setStamina(selected_characters.at(turn).getStamina()-5);
+                    cout << "You pulled a " << pulled_card.name << " card!";
+                    if(pulled_card.isDouble){
+                        if(pulled_card.color == "purple"){
+                            cout << " You advance to the second purple tile." << endl;
+                        } else if(pulled_card.color == "green"){
+                            cout << " You advance to the second green tile." << endl;
+                        } else if(pulled_card.color == "blue"){
+                            cout << " You advance to the second blue card." << endl;
+                        }
+                    } else{
+                        if(pulled_card.color == "purple"){
+                            cout << " You advance to the next purple tile." << endl;
+                        } else if(pulled_card.color == "green"){
+                            cout << " You advance to the next green tile." << endl;
+                        } else if(pulled_card.color == "blue"){
+                            cout << " You advance to the next blue card." << endl;
+                        }
+                    }
+                    if(board.getTile(board.getPlayerPosition(turn)).isSpecial){
+                        Tile current_tile = board.getTile(board.getPlayerPosition(turn));
+                        cout << "You landed on a " << current_tile.tile_type << endl;
+                        if(current_tile.tile_type == "Shortcut"){
+                            cout << "You moved forward 4 tiles!" << endl;
+                            board.movePlayer(4, turn);
+                        } else if(current_tile.tile_type == "Ice Cream"){
+                            cout << "You get an extra turn!" << endl;
+                            selected_characters.at(turn).setExtraTurn(true);
+                        } else if(current_tile.tile_type == "Gumdrop Forest"){
+                            cout << "You were pushed back by the beauty of the Gumdrop Forest..." << endl;
+                            board.movePlayer(-1*4, turn);
+                            int goldLost = (rand() % 10) + 5;
+                            selected_characters.at(turn).setGold(selected_characters.at(turn).getGold() - goldLost);
+                            if(selected_characters.at(turn).getGold() < 0){
+                                selected_characters.at(turn).setGold(0);
+                            }
+                        } else if(current_tile.tile_type == "Gingerbread House"){
+                            cout << "You were transported back to your previous position " << tiles_moved << " tiles back, and you lost one of your candies..." << endl;
+                            board.movePlayer(-1*tiles_moved, turn);
+                            for(int i = 0; i < 4; i++){
+                                if(!foundCandy){
+                                    if(selected_characters.at(turn).getCandy(i).candy_type == "immunity"){
+                                        selected_characters.at(turn).removeCandy(selected_characters.at(turn).getCandy(i).name);
+                                        foundCandy = true;
+                                    }
+                                }
+                            }
+                        }
+                    } else{
+                        calamityChance = (rand()%10);
+                        if(calamityChance < 4){
+                            cout << "You have triggered a Calamity!" << endl;
+                            calamityRand = (rand()%100);
+                            if(calamityRand <= 30){
+                                int goldLost = (rand()%10)+5;
+                                cout << "Candy Bandit Calamity: Oh no! You have been robbed of " << goldLost  << " gold!"<< endl;
+                                selected_characters.at(turn).setGold(selected_characters.at(turn).getGold()-goldLost);
+                                if(selected_characters.at(turn).getGold() < 0){
+                                    selected_characters.at(turn).setGold(0);
+                                }
+                            } else if(calamityRand > 30 && calamityRand <= 65){
+                                cout << "Lollipop Labyrinth Calamity: Oh dear! You got lost in the lollipop labyrinth! But you can recover the damage by playing Rock, Paper, Scissors See Rock Paper Scissors. If you win, you get the lost turn back." << endl;
+                                if(playRockPaperScissors(selected_characters.at(turn))){
+                                    cout << "You were able to escape and got your turn next back" << endl;
+                                } else{
+                                    cout << "You were not able to escape and lost your next turn" << endl;
+                                    selected_characters.at(turn).setLostTurn(true);
+                                }
+                            } else if(calamityRand > 65 && calamityRand <= 80){
+                                cout << "Candy Avalanche Calamity: Watch out! A candy avalanche has struck! But you can recover the damage by playing Rock, Paper, Scissors See Rock Paper Scissors. If you win, you get the lost resources back." << endl;
+                                if(playRockPaperScissors(selected_characters.at(turn))){
+                                    cout << "You were able to escape and got your stamina back" << endl;
+                                } else{
+                                    int staminaLost = (rand()%10)+5;
+                                    cout << "You were not able to escape and lost " << staminaLost << " stamina!" << endl;
+                                    selected_characters.at(turn).setStamina(selected_characters.at(turn).getStamina()-staminaLost);
+                                    if(selected_characters.at(turn).getStamina() == 0){
+                                        selected_characters.at(turn).setStamina(0);
+                                    }
+                                }
+                            } else if(calamityRand > 80){
+                                cout << "Sticky Taffy Calamity: Oops! You are stuck in a sticky taffy trap!" << endl;
+                                bool stuck = true;
+                                for(int i = 0; i < 3; i++){
+                                    if(selected_characters.at(turn).getCandy(i).candy_type == "magical" || stuck){
+                                        cout << "However, you can use your " << selected_characters.at(turn).getCandy(i).name << " to get out of it and recover your turn, would you like to use it?(y/n)" << endl;
+                                        string confirm_input;
+                                        cin >> confirm_input;
+                                        if(confirm_input == "y"){
+                                            cout << "You used one of your magic candies. You regain your next turn." << endl;
+                                            stuck = false;
+                                            selected_characters.at(turn).removeCandy(selected_characters.at(turn).getCandy(i).name);
+                                            selected_characters.at(turn).setLostTurn(false);
+                                        } else{
+                                            cout << "You failed to use your magic candy. You lose your next turn." << endl;
+                                            selected_characters.at(turn).setLostTurn(true);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    for(int i = 0; i < selected_characters.size(); i++){
+                        if(board.getPlayerPosition(turn) == board.getPlayerPosition(i) && players[turn] != players[i]){
+                            onSameTile = true;
+                            firstPlayerIndex = i;
+                            secondPlayerIndex = turn;
+                        }
+                    }
+                    if(onSameTile){
+                        bool unProtected = true;
+                        cout << players[turn] << " landed on the same tile as " << players[firstPlayerIndex] << "!" << endl;
+                        if(selected_characters.at(turn).findCandy("Robbers Repel").name == "Robbers Repel"){
+                            cout << players[firstPlayerIndex] << " could have stolen gold from " << players[turn] << " however, you have Robbers Repel! Would you like to use it?(y/n)" << endl;
+                            cin >> selection_input;
+                            if(selection_input == "y"){
+                                unProtected = false;
+                                cout << "Robbers Repel Expended! Opposing player moved backwards one" << endl;
+                                board.movePlayer(-1, firstPlayerIndex);
+                                selected_characters.at(turn).removeCandy("Robbers Repel");
+                            } else{
+                                cout << players[turn] << " chose not to use Robbers Repel" << endl;
+                            }
+                        }
+                        if(unProtected){
+                            int goldLost = (rand()%30)+5;
+                            cout << players[firstPlayerIndex] << " has stolen " << goldLost <<  " gold from " << players[turn] << " and pushed them back tile" << endl;
+                            board.movePlayer(-1, turn);
+                            selected_characters.at(turn).setGold(selected_characters.at(turn).getGold() - goldLost);
+                            selected_characters.at(firstPlayerIndex).setGold(selected_characters.at(firstPlayerIndex).getGold() + goldLost);
+                            if(selected_characters.at(turn).getGold() < 0){
+                                selected_characters.at(turn).setGold(0);
+                            }
+                        }   
+                    }
+                    
+                    
+                    if(board.getPlayerPosition(turn) == hiddenPos1){
+                        cout << "You have discovered hidden treasure!\nSolve this riddle to get a reward!" << endl;
+                        board.getTreasure(0).setSolver(selected_characters.at(turn));
+                        cout << board.getTreasure(0).getRiddle() << endl;
+                        string answer;
+                        cin.clear();
+                        cin.ignore(1000, '\n');
+                        getline(cin, answer);
+                        cout << answer << " " << board.getTreasure(0).getAnswer();
+                        if(answer == board.getTreasure(0).getAnswer()){
+                            cout << "That is correct!" << endl;
+                            cout << "The reward is " << board.getTreasure(0).getType() << endl;
+                            board.getTreasure(0).reward();
+                        }
+                    } else if(board.getPlayerPosition(turn) == hiddenPos2){
+                        cout << "You have discovered hidden treasure!\nSolve this riddle to get a reward!" << endl;
+                        board.getTreasure(1).setSolver(selected_characters.at(turn));
+                        cout << board.getTreasure(1).getRiddle() << endl;
+                        string answer;
+                        cin.clear();
+                        cin.ignore(1000, '\n');
+                        getline(cin, answer);
+                        if(answer == board.getTreasure(1).getAnswer()){
+                            cout << "That is correct!" << endl;
+                            cout << "The reward is " << board.getTreasure(1).getType() << endl;
+                            board.getTreasure(1).reward();
+                        }
+                    } else if(board.getPlayerPosition(turn) == hiddenPos3){
+                        cout << "You have discovered hidden treasure!\nSolve this riddle to get a reward!" << endl;
+                        board.getTreasure(2).setSolver(selected_characters.at(turn));
+                        cout << board.getTreasure(2).getRiddle() << endl;
+                        string answer;
+                        cin.clear();
+                        cin.ignore(1000, '\n');
+                        getline(cin, answer);
+                        if(answer == board.getTreasure(2).getAnswer()){
+                            cout << "That is correct!" << endl;
+                            cout << "The reward is " << board.getTreasure(2).getType() << endl;
+                            board.getTreasure(2).reward();
+                        }
+                    }
+                    cout << "\nHere is an updated board:" << endl;
+                    board.displayBoard();
+                    if(!selected_characters.at(turn).getExtraTurn()){
+                        turn++;
+                    } else{
+                        cout << "Extra Turn!!!" << endl;
+                        selected_characters.at(turn).setExtraTurn(false);
+                    }
+                }
                 break;
             case 2:
                 cout << "Here is your Inventory of candies:" << endl;
@@ -254,7 +529,11 @@ int main(int argc, char *argv[]){
                     selected_characters.at(turn).removeCandy(candy_input);
                     cout << players[turn] << " ate " << candy_input << endl; 
                     candy_input = "";
-                    turn++;
+                    if(!selected_characters.at(turn).getExtraTurn()){ 
+                        turn++;
+                    } else{
+                        selected_characters.at(turn).setExtraTurn(false);
+                    }
                 } else{
                     cin.clear();
                     cin.ignore(1000, '\n');
@@ -272,7 +551,7 @@ int main(int argc, char *argv[]){
                 break;
             case 4: // Remove Later after testing
                 if(atCandyStore){
-                    printCandyStore(board.getCandyStore(atCandyStoreIndex).getCandyList());
+                    printCandyStore(board.getCandyStore(atCandyStoreIndex).getCandyList(), 3);
                     cout << "What would you like to buy?" << endl;
                     getline(cin, candy_input);
                     for(int i = 0; i < 3; i++){
@@ -280,13 +559,20 @@ int main(int argc, char *argv[]){
                             if(board.getCandyStore(atCandyStoreIndex).getCandyList().at(i).price <= selected_characters.at(turn).getGold()){
                                 if(selected_characters.at(turn).getCandyAmount() < 4){
                                     selected_characters.at(turn).setGold(selected_characters.at(turn).getGold() - board.getCandyStore(atCandyStoreIndex).getCandyList().at(i).price);
+                                    selected_characters.at(turn).addCandy(board.getCandyStore(atCandyStoreIndex).getCandyList().at(i));
                                     turn++;
                                 } else{
                                     cout << "You do not have sufficient room, would you like to swap one of your candies for this candy?" << endl;
                                     cin >> selection_input;
                                     if(selection_input == "y"){
                                         cout << "Choose one to swap out" << endl;
-                                        getline(cin, candy_input); // Continue here 
+                                        cin.clear();
+                                        cin.ignore(1000, '\n');
+                                        getline(cin, candy_input);
+                                        selected_characters.at(turn).removeCandy(candy_input);
+                                        selected_characters.at(turn).setGold(selected_characters.at(turn).getGold() - board.getCandyStore(atCandyStoreIndex).getCandyList().at(i).price);
+                                        selected_characters.at(turn).addCandy(board.getCandyStore(atCandyStoreIndex).getCandyList().at(i));
+                                        turn++;
                                     }
                                 }
                             } else{
@@ -301,16 +587,26 @@ int main(int argc, char *argv[]){
                     cout << "Invalid Input, please enter 1, 2, or 3." << endl;
                 }
                 break;
+            case 8: // Remove after Testing
+                gameRunning = false; 
+                break;
             default:
                 cin.clear();
                 cin.ignore(1000, '\n');
                 cout << "Invalid Input, please enter 1, 2, or 3." << endl;
                 break;
         }
+        cout << "Press any key to continue" << endl;
+        cin >> turn_input;
+        cin.clear();
+        cin.ignore(1000, '\n');
+        system("cls"); // "cls for Windows, clear for MacOS"
         if(turn == player_count){
             round += 1;
             turn = 0;
+            atCandyStore = false;
         }
+        
     }
     return 0;
 }

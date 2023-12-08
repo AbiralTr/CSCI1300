@@ -5,35 +5,44 @@
 #include <time.h>
 #include <random>
 
-int randomNumber(int lowerBound, int upperBound){
-    srand(time(0));
-    int random_number = (rand() % upperBound) + lowerBound;
-    return random_number;
-}
-
 Board::Board()
 {
     resetBoard();
 }
 
 void Board::resetBoard()
-{
+{   
+    srand(time(0));
     const int COLOR_COUNT = 3;
     const string COLORS[COLOR_COUNT] = {MAGENTA, GREEN, BLUE};
     Tile new_tile;
     string current_color;
-    for (int i = 0; i < _BOARD_SIZE - 1; i++)
-    {
-        /*
-        Create rand that creates  20% chance of there being a special tile,
-        if there is a special tile,
-        have another random with 25% chance of any of the 4 types
-        */
+    for (int i = 0; i < _BOARD_SIZE - 1; i++){
+        int specialChance = (rand()%4);
         current_color = COLORS[i % COLOR_COUNT];
-        new_tile = {current_color, "regular tile"};
+        if(specialChance == 0){
+            new_tile = {current_color, true};
+            int specialType = (rand()%4);
+            switch(specialType){
+                case 0:
+                    new_tile.tile_type = "Shortcut";
+                    break;
+                case 1:
+                    new_tile.tile_type = "Ice Cream";
+                    break;
+                case 2:
+                    new_tile.tile_type = "Gumdrop Forest";
+                    break;
+                case 3:
+                    new_tile.tile_type = "Gingerbread House";
+                    break;
+            }
+        } else{
+            new_tile = {current_color, false ,"regular tile"};
+        }
         _tiles[i] = new_tile;
     }
-    new_tile = {ORANGE, "regular tile"};
+    new_tile = {ORANGE, false, "regular tile"};
     _tiles[_BOARD_SIZE - 1] = new_tile;
 
     _candy_store_count = 0;
@@ -52,19 +61,18 @@ void Board::displayTile(int position)
     Tile target = _tiles[position];
     cout << target.color;
 
-    if(position == _candy_store_position[0] || position == _candy_store_position[1] || position == _candy_store_position[2]){
-        cout << " !";
-    } else{
-        cout << "  ";
-    }
+    cout << "  ";
     
     for(int i = 0; i < _players.size(); i++){
         if(position ==  _players.at(i).getPosition()){
             cout << i+1;
         }
     }
-    
     cout << " " << RESET;
+}
+
+Tile Board::getTile(int position){
+    return _tiles[position];
 }
 
 void Board::setPlayers(vector<Player> players){
@@ -198,7 +206,7 @@ bool Board::riddle(int index){
 
 bool Board::movePlayer(int tile_to_move_forward, int index)
 {
-    int new_player_position = tile_to_move_forward + _players.at(index).getPosition();
+    int new_player_position =  _players.at(index).getPosition() + tile_to_move_forward;
     if(new_player_position < 0 || new_player_position >= _BOARD_SIZE)
     {
         return false;
@@ -207,117 +215,242 @@ bool Board::movePlayer(int tile_to_move_forward, int index)
     return true;
 }
 
-int Board::drawCard(int index){
-    string cards[6] = {"Matrix Magenta", "Emerald Green", "Beaten Blue", "Metaphysical Magenta", "Groundbreaking Green", "Black n Blue"};
+Card Board::drawCard(int index){
+    srand(time(0));
+    string name;
+    bool isDouble = false;
+    string color;
     int tiles_moved = 0;
-    int pull = randomNumber(1, 6);
+    int pull = (rand()%6) + 1;
     int current_position = getPlayer(index).getPosition()+1;
     int tile_ratio = current_position % 3;
     switch(pull){
         case 1:
-            cout << "You pulled a Matrix Magenta card! You advance to the next purple tile." << endl;
+            name = "Matrix Magenta";
+            color = "purple";
             switch(tile_ratio){
                 case 0: // blue
+                    tiles_moved = 1;
                     movePlayer(1, index);
                     getPlayer(index).setPosition(current_position+1);
                     break;
                 case 1: // purple
+                    tiles_moved = 3;
                     movePlayer(3, index);
                     getPlayer(index).setPosition(current_position+3);
                     break;
                 case 2: // green
+                    tiles_moved = 2;
                     movePlayer(2, index);
                     getPlayer(index).setPosition(current_position+2);
                     break;
             }
             break;
         case 2:
-            cout << "You pulled a Emerald Green! You advance to the next green tile." << endl;
+            name = "Emerald Green";
+            color = "green";
             switch(tile_ratio){
                 case 0: // blue
+                    tiles_moved = 2;
                     movePlayer(2, index);
                     getPlayer(index).setPosition(current_position+2);
                     break;
                 case 1: // purple
+                    tiles_moved = 1;
                     movePlayer(1, index);
                     getPlayer(index).setPosition(current_position+1);
                     break;
                 case 2: // green
                     movePlayer(3, index);
+                    tiles_moved = 3;
                     getPlayer(index).setPosition(current_position+3);
                     break;
             }
             break;
         case 3:
-            cout << "You pulled a Beaten Blue card! You advance to the next blue tile." << endl;
+            name = "Beaten Blue";
+            color = "blue";
             switch(tile_ratio){
                 case 0: // blue
                     movePlayer(3, index);
+                    tiles_moved = 3;
                     getPlayer(index).setPosition(current_position+3);
                     break;
                 case 1: // purple
                     movePlayer(2, index);
+                    tiles_moved = 2;
                     getPlayer(index).setPosition(current_position+2);
                     break;
                 case 2: // green
                     movePlayer(1, index);
+                    tiles_moved = 1;
                     getPlayer(index).setPosition(current_position+1);
                     break;
             }
             break;
         case 4:
-            cout << "You pulled a Metaphysical Magenta card! You advance to the second purple tile." << endl;
+            name = "Metaphysical Magenta";
+            isDouble = true;
+            color = "purple";
             switch(tile_ratio){
                 case 0: // blue
                     movePlayer(4, index);
+                    tiles_moved = 4;
                     getPlayer(index).setPosition(current_position+4);
                     break;
                 case 1: // purple
                     movePlayer(6, index);
+                    tiles_moved = 6;
                     getPlayer(index).setPosition(current_position+6);
                     break;
                 case 2: // green
                     movePlayer(5, index);
+                    tiles_moved = 5;
                     getPlayer(index).setPosition(current_position+5);
                     break;
             }
             break;
         case 5:
-            cout << "You pulled a Groundbreaking Green card! You advance to the second green tile." << endl;
+            name = "Groundbreaking Green";
+            isDouble = true;
+            color = "green";
             switch(tile_ratio){
                 case 0: // blue
                     movePlayer(5, index);
+                    tiles_moved = 5;
                     getPlayer(index).setPosition(current_position+5);
                     break;
                 case 1: // purple
                     movePlayer(4, index);
+                    tiles_moved = 4;
                     getPlayer(index).setPosition(current_position+4);
                     break;
                 case 2: // green
                     movePlayer(6, index);
+                    tiles_moved = 6;
                     getPlayer(index).setPosition(current_position+6);
                     break;
             }
             break;
         case 6:
-            cout << "You pulled a Black n Blue card! You advance to the second blue tile." << endl;
+            name = "Black n Blue";
+            isDouble = true;
+            color = "blue";
                 switch(tile_ratio){
                     case 0: // blue
                         movePlayer(6, index);
+                        tiles_moved = 6;
                         getPlayer(index).setPosition(current_position+6);
                         break;
                     case 1: // purple
                         movePlayer(5, index);
+                        tiles_moved = 5;
                         getPlayer(index).setPosition(current_position+5);
                         break;
                     case 2: // green
                         movePlayer(4, index);
+                        tiles_moved = 4;
                         getPlayer(index).setPosition(current_position+4);
                         break;
                 }
             break;
     }
     
+    Card card{name, isDouble, tiles_moved, color};
+    return card;
+}
 
-    return tiles_moved;
+hiddenTreasure::hiddenTreasure(){
+
+}
+
+hiddenTreasure::hiddenTreasure(string r, string a){
+    riddle = r;
+    answer = a;
+
+}
+
+string hiddenTreasure::getRiddle(){
+    return riddle;
+}
+
+string hiddenTreasure::getType(){
+    return type;
+}
+
+int hiddenTreasure::getPos(){
+    return position;
+}
+
+void hiddenTreasure::setRiddle(string r){
+    riddle = r;
+}
+
+void hiddenTreasure::setSolver(Player p){
+    solver = p;
+}
+
+void hiddenTreasure::setPos(int p){
+    position = p;
+}
+
+string hiddenTreasure::getAnswer(){
+    return answer;
+}
+
+void hiddenTreasure::setType(int t){
+    switch(t){
+        case 0:
+            type = "Stamina Refill";
+            break;
+        case 1:
+            type = "Gold Windfall";
+            break;
+        case 2:
+            type = "Robber's Repel";
+            break;
+        case 3:
+            type = "Candy Acquisition";
+            break;
+    }
+}
+
+void Board::addTreasure(int pos, hiddenTreasure h){
+    _hidden_treasures.push_back(h);
+}
+
+hiddenTreasure Board::getTreasure(int index){
+    return _hidden_treasures[index];
+}
+
+void hiddenTreasure::reward(){
+    srand(time(0));
+    if(type == "Stamina Refill"){
+        int refill_amount = (rand()%30)+10;
+        solver.setStamina(solver.getStamina()+refill_amount);
+        if(solver.getStamina() > 100){
+            solver.setStamina(100);
+        }
+    } else if(type == "Gold Windfall"){
+        int gold_amount = (rand()%40)+20;
+        solver.setGold(solver.getGold()+gold_amount);
+        if(solver.getGold() > 100){
+            solver.setGold(100);
+        }
+    } else if(type == "Robber's Repel"){
+        Candy rr{"Robbers Repel"};
+        cout << "You received Robbers Repel!" << endl;
+        solver.addCandy(rr);
+    } else if(type == "Candy Acquisition"){
+        int chance = (rand()%10);
+        if(chance > 3){
+            Candy jellybean{"Jellybean of Vigor", "Restores 50 units of stamina", 0, "stamina" ,"magical", 50};
+            cout << "You received the Jellybean of Vigor!" << endl;
+            solver.addCandy(jellybean);
+        } else{
+            Candy truffle{"Treasure Hunter's Truffle", "Allows access to more hidden treasures", 0, "other" ,"magical", 1};
+            cout << "You received the Treasure Hunter's Truffle!" << endl;
+            solver.addCandy(truffle);
+        }
+    }
 }

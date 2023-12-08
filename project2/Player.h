@@ -14,6 +14,8 @@ class Player{
         Candy _inventory[_MAX_CANDY_AMOUNT];
         int	_candy_amount = 0;
         int _position = 0;
+        bool _extra_turn = false;
+        bool _lost_turn = false;
     public:
         Player();
         Player(string name, int stamina, double gold, std::string effect, Candy candy_array[], const int CANDY_ARRAY_SIZE);
@@ -35,5 +37,11 @@ class Player{
         void setInventory(Candy array[], const int CANDY_ARRAY_SIZE);
         int getPosition();
         void setPosition(int pos);
+        void setExtraTurn(bool b);
+        bool getExtraTurn();
+        void setLostTurn(bool b);
+        bool getLostTurn();
         void eatCandy(string name);
+        void giveCandy(Player p, Candy c);
+        Candy getCandy(int i);
 };

@@ -9,6 +9,7 @@ struct Candy{
     string name = "Empty";
     string description;
     double price = 0;
+    string effect_type;
     string candy_type;
     int value = 0;
 };
